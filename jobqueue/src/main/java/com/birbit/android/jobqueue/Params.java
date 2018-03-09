@@ -64,6 +64,15 @@ public class Params {
     }
 
     /**
+     *  Sets the job as requiring WEB_SOCKET network.
+     * @return this
+     */
+    public Params requireWebSocketConnected() {
+        requiredNetworkType = NetworkUtil.WEB_SOCKET;
+        return this;
+    }
+
+    /**
      * Sets the group id. Jobs in the same group are guaranteed to execute sequentially.
      * @param groupId which group this job belongs (can be null of course)
      * @return this
@@ -110,11 +119,13 @@ public class Params {
      * Convenience method to set network requirement.
      * <p>
      * If you call this method with <code>true</code> and you've already called
-     * {@link #requireUnmeteredNetwork()}, this method has no effect.
+     * {@link #requireUnmeteredNetwork()} or {@link #requireWebSocketConnected()},
+     * this method has no effect.
      *
      * @param requiresNetwork true|false
      * @return this
      * @see #requireNetwork()
+     * @see #requireWebSocketConnected()
      */
     public Params setRequiresNetwork(boolean requiresNetwork) {
         if (requiresNetwork) {
@@ -131,17 +142,37 @@ public class Params {
      * Convenience method to set unmetered network requirement.
      * <p>
      * If you call this method with <code>false</code> and you've already called
-     * {@link #requireNetwork()}, this method has no effect.
+     * {@link #requireNetwork()} or {@link #requireWebSocketConnected()}, this
+     * method has no effect.
      *
      * @param requiresUnmeteredNetwork true|false
      * @return this
      * @see #requireUnmeteredNetwork()
+     * @see #requireWebSocketConnected()
      */
     public Params setRequiresUnmeteredNetwork(boolean requiresUnmeteredNetwork) {
         if (requiresUnmeteredNetwork) {
             this.requiredNetworkType = NetworkUtil.UNMETERED;
         } else if (this.requiredNetworkType != NetworkUtil.METERED){
             this.requiredNetworkType = NetworkUtil.DISCONNECTED;
+        }
+        return this;
+    }
+
+    /**
+     * Convenience method to set web_socket_connected requirement.
+     * <p>
+     * If you call this method with <code>false</code> and you've already called
+     * {@link #requireNetwork()} or {@link #requireUnmeteredNetwork()}, this
+     * method has no effect.
+     * @param requiresWebSocketConnected true|false
+     * @return this
+     * @see #requireNetwork()
+     * @see #requireUnmeteredNetwork()
+     */
+    public Params setRequiresWebSocketConnected(boolean requiresWebSocketConnected) {
+        if (requiresWebSocketConnected) {
+            this.requiredNetworkType = NetworkUtil.WEB_SOCKET;
         }
         return this;
     }

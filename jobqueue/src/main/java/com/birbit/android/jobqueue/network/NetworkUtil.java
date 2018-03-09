@@ -16,11 +16,12 @@ public interface NetworkUtil {
      * of availability.
      */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({DISCONNECTED, METERED, UNMETERED})
+    @IntDef({DISCONNECTED, METERED, UNMETERED, WEB_SOCKET})
     @interface NetworkStatus {}
     int DISCONNECTED = 0;
     int METERED = 1;
     int UNMETERED = 2;
+    int WEB_SOCKET = 3;
 
     /**
      * Returns the current connection status. If you cannot detect granular network type, return
@@ -30,7 +31,7 @@ public interface NetworkUtil {
      * @param context The application context
      *
      * @return The current connection status. It should be one of {@link #DISCONNECTED},
-     * {@link #METERED} or {@link #UNMETERED}.
+     * {@link #METERED} or {@link #UNMETERED} or {@link #WEB_SOCKET}.
      */
     @NetworkStatus
     int getNetworkStatus(Context context);

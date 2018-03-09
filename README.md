@@ -1,3 +1,19 @@
+### Different between original project
+Support NetworkUtil.WEB_SOCKET for some jobs can only executed while web socket connected,
+And you should implement your own NetworkUtil.
+``` java
+// A job to send a tweet
+public class PostTweetJob extends Job {
+    public static final int PRIORITY = 1;
+    private String text;
+    public PostTweetJob(String text) {
+        // This job requires web socket connected,
+        // and should be persisted in case the application exits before job is completed.
+        super(new Params(PRIORITY).requireWebSocketConnected().persist());
+    }
+}
+```
+
 # This Project is Deprecated!
 
 Thanks to everybody who've used Android Priority JobQueue.
@@ -9,6 +25,7 @@ For your persistent jobs, I recommend using WorkManager.
 For your non-persistent jobs, drink the kool aid and use Coroutines.
 
 Thanks.
+
 
 ### V2 is here!
 There is a major internal rewrite of this project for more stability and new features. If you were using v1, see the migration guide here: [migration from v1 to v2](https://github.com/yigit/android-priority-jobqueue/wiki/V1-to-V2-migration)
