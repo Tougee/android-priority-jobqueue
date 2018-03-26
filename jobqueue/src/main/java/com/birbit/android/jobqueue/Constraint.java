@@ -134,7 +134,7 @@ public class Constraint {
     }
 
     void clear() {
-        maxNetworkType = NetworkUtil.UNMETERED;
+        maxNetworkType = NetworkUtil.WEB_SOCKET;
         tagConstraint = null;
         tags.clear();
         excludeGroups.clear();

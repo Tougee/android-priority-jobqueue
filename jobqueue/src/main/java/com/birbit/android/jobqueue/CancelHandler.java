@@ -35,7 +35,7 @@ class CancelHandler {
         queryConstraint.setExcludeJobIds(running);
         queryConstraint.setTags(tags);
         queryConstraint.setExcludeRunning(true);
-        queryConstraint.setMaxNetworkType(NetworkUtil.UNMETERED);
+        queryConstraint.setMaxNetworkType(NetworkUtil.WEB_SOCKET);
         Set<JobHolder> nonPersistentInQueue = jobManagerThread.nonPersistentJobQueue
                 .findJobs(queryConstraint);
         Set<JobHolder> persistentInQueue = jobManagerThread.persistentJobQueue

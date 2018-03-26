@@ -202,7 +202,7 @@ class JobManagerThread implements Runnable, NetworkEventProvider.Listener {
             queryConstraint.clear();
             queryConstraint.setTags(new String[]{singleIdTag});
             queryConstraint.setTagConstraint(TagConstraint.ANY);
-            queryConstraint.setMaxNetworkType(NetworkUtil.UNMETERED);
+            queryConstraint.setMaxNetworkType(NetworkUtil.WEB_SOCKET);
             Set<JobHolder> jobs = nonPersistentJobQueue.findJobs(queryConstraint);
             jobs.addAll(persistentJobQueue.findJobs(queryConstraint));
             if (!jobs.isEmpty()) {
