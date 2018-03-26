@@ -79,7 +79,8 @@ class GcmScheduler extends Scheduler {
                 return Task.NETWORK_STATE_ANY;
             case NetworkUtil.METERED:
                 return Task.NETWORK_STATE_CONNECTED;
-            case NetworkUtil.UNMETERED || NetworkUtil.WEB_SOCKET:
+            case NetworkUtil.UNMETERED:
+            case NetworkUtil.WEB_SOCKET:
                 return Task.NETWORK_STATE_UNMETERED;
         }
         JqLog.e("unknown network status %d. Defaulting to CONNECTED", networkStatus);

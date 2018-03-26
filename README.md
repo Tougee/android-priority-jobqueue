@@ -63,6 +63,23 @@ For your non-persistent jobs, drink the kool aid and use Coroutines.
 Thanks.
 
 
+## Usage
+
+``` Gradle
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+	
+dependencies {
+    compile 'com.github.tougee:android-priority-jobqueue:1.0.0'
+}
+```
+
+==================================================================================
+
 
 ### V2 is here!
 There is a major internal rewrite of this project for more stability and new features. If you were using v1, see the migration guide here: [migration from v1 to v2](https://github.com/yigit/android-priority-jobqueue/wiki/V1-to-V2-migration)
