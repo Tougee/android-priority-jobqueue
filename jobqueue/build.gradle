@@ -12,8 +12,6 @@ dependencies {
     testImplementation 'com.google.android.gms:play-services-gcm:17.0.0'
 
     implementation 'com.squareup.okio:okio:1.17.5'
-
-    compileOnly 'com.google.android.gms:play-services-gcm:17.0.0'
 }
 
 android {
