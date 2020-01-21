@@ -74,7 +74,7 @@ allprojects {
 }
 	
 dependencies {
-    compile 'com.github.tougee:android-priority-jobqueue:2.0.7'
+    compile 'com.github.tougee:android-priority-jobqueue:3.0.0'
 }
 ```
 
