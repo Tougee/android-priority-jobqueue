@@ -1,7 +1,6 @@
 package com.birbit.android.jobqueue.persistentQueue.sqlite;
 
-import androidx.collection.LruCache;
-
+import android.util.LruCache;
 import com.birbit.android.jobqueue.Constraint;
 import com.birbit.android.jobqueue.TagConstraint;
 
