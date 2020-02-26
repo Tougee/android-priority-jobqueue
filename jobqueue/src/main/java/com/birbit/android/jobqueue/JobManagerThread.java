@@ -11,14 +11,7 @@ import com.birbit.android.jobqueue.messaging.Message;
 import com.birbit.android.jobqueue.messaging.MessageFactory;
 import com.birbit.android.jobqueue.messaging.MessageQueueConsumer;
 import com.birbit.android.jobqueue.messaging.PriorityMessageQueue;
-import com.birbit.android.jobqueue.messaging.message.AddJobMessage;
-import com.birbit.android.jobqueue.messaging.message.CancelMessage;
-import com.birbit.android.jobqueue.messaging.message.CommandMessage;
-import com.birbit.android.jobqueue.messaging.message.ConstraintChangeMessage;
-import com.birbit.android.jobqueue.messaging.message.JobConsumerIdleMessage;
-import com.birbit.android.jobqueue.messaging.message.PublicQueryMessage;
-import com.birbit.android.jobqueue.messaging.message.RunJobResultMessage;
-import com.birbit.android.jobqueue.messaging.message.SchedulerMessage;
+import com.birbit.android.jobqueue.messaging.message.*;
 import com.birbit.android.jobqueue.network.NetworkEventProvider;
 import com.birbit.android.jobqueue.network.NetworkUtil;
 import com.birbit.android.jobqueue.scheduling.Scheduler;
@@ -243,6 +236,9 @@ class JobManagerThread implements Runnable, NetworkEventProvider.Listener {
                         canScheduleConstraintChangeOnIdle = handled ||
                                 !constraintChangeMessage.isForNextJob();
                         break;
+                    case CANCEL_BY_ID:
+                        handleCancelById((CancelByIdMessage) message);
+                        break;
                     case CANCEL:
                         handleCancel((CancelMessage) message);
                         break;
@@ -459,6 +455,40 @@ class JobManagerThread implements Runnable, NetworkEventProvider.Listener {
                 pendingCancelHandlers = new ArrayList<>();
             }
             pendingCancelHandlers.add(handler);
+        }
+    }
+
+    private void handleCancelById(CancelByIdMessage message) {
+        String jobId = message.getId();
+        JobHolder nonPersistent = nonPersistentJobQueue.findJobById(jobId);
+        ArrayList<JobHolder> canceledList = new ArrayList<>();
+        if (nonPersistent != null) {
+            nonPersistent.markAsCancelled();
+            canceledList.add(nonPersistent);
+            nonPersistentJobQueue.onJobCancelled(nonPersistent);
+        }
+        JobHolder persistent = persistentJobQueue.findJobById(jobId);
+        if (persistent != null) {
+            persistent.markAsCancelled();
+            canceledList.add(persistent);
+            persistentJobQueue.onJobCancelled(persistent);
+        }
+        for (JobHolder jobHolder : canceledList) {
+            try {
+                jobHolder.onCancel(CancelReason.CANCELLED_WHILE_RUNNING);
+            } catch (Throwable ignored) {
+            }
+            if (jobHolder.getJob().isPersistent()) {
+                persistentJobQueue.remove(jobHolder);
+            }
+        }
+        CancelByIdMessage.Callback callback = message.getCallback();
+        if (callback != null) {
+            callback.onCancelled();
+        }
+        for (JobHolder jobHolder : canceledList) {
+            callbackManager.notifyOnCancel(jobHolder.getJob(), true,
+                    jobHolder.getThrowable());
         }
     }
 

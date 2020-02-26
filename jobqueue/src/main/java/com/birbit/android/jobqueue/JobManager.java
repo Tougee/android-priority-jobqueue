@@ -13,11 +13,7 @@ import com.birbit.android.jobqueue.messaging.Message;
 import com.birbit.android.jobqueue.messaging.MessageFactory;
 import com.birbit.android.jobqueue.messaging.MessageQueue;
 import com.birbit.android.jobqueue.messaging.PriorityMessageQueue;
-import com.birbit.android.jobqueue.messaging.message.AddJobMessage;
-import com.birbit.android.jobqueue.messaging.message.CancelMessage;
-import com.birbit.android.jobqueue.messaging.message.CommandMessage;
-import com.birbit.android.jobqueue.messaging.message.PublicQueryMessage;
-import com.birbit.android.jobqueue.messaging.message.SchedulerMessage;
+import com.birbit.android.jobqueue.messaging.message.*;
 import com.birbit.android.jobqueue.scheduling.Scheduler;
 import com.birbit.android.jobqueue.scheduling.SchedulerConstraint;
 
@@ -394,6 +390,28 @@ public class JobManager {
         } catch (InterruptedException ignored) {
         }
         return result[0];
+    }
+
+    public void cancelJobById(@NonNull String id) {
+        assertNotInMainThread("Cannot call this method on main thread. Use cancelJobsInBackground"
+                + " instead");
+        assertNotInJobManagerThread("Cannot call this method on JobManager's thread. Use" +
+                "cancelJobsInBackground instead");
+        final CountDownLatch latch = new CountDownLatch(1);
+        CancelByIdMessage.Callback callback = new CancelByIdMessage.Callback() {
+            @Override
+            public void onCancelled() {
+                latch.countDown();
+            }
+        };
+        CancelByIdMessage message = messageFactory.obtain(CancelByIdMessage.class);
+        message.setId(id);
+        message.setCallback(callback);
+        messageQueue.post(message);
+        try {
+            latch.await();
+        } catch (InterruptedException ignored) {
+        }
     }
 
     /**

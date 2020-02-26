@@ -1,16 +1,6 @@
 package com.birbit.android.jobqueue.messaging;
 
-import com.birbit.android.jobqueue.messaging.message.AddJobMessage;
-import com.birbit.android.jobqueue.messaging.message.CallbackMessage;
-import com.birbit.android.jobqueue.messaging.message.CancelMessage;
-import com.birbit.android.jobqueue.messaging.message.CancelResultMessage;
-import com.birbit.android.jobqueue.messaging.message.CommandMessage;
-import com.birbit.android.jobqueue.messaging.message.ConstraintChangeMessage;
-import com.birbit.android.jobqueue.messaging.message.PublicQueryMessage;
-import com.birbit.android.jobqueue.messaging.message.JobConsumerIdleMessage;
-import com.birbit.android.jobqueue.messaging.message.RunJobMessage;
-import com.birbit.android.jobqueue.messaging.message.RunJobResultMessage;
-import com.birbit.android.jobqueue.messaging.message.SchedulerMessage;
+import com.birbit.android.jobqueue.messaging.message.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +15,7 @@ public enum Type {
     COMMAND(CommandMessage.class, 0),
     PUBLIC_QUERY(PublicQueryMessage.class, 0),
     JOB_CONSUMER_IDLE(JobConsumerIdleMessage.class, 0), // MUST ARRIVE AFTER JOB RESULT
+    CANCEL_BY_ID(CancelByIdMessage.class, 0),
     ADD_JOB(AddJobMessage.class, 1),
     CANCEL(CancelMessage.class, 1),
     CONSTRAINT_CHANGE(ConstraintChangeMessage.class, 2),

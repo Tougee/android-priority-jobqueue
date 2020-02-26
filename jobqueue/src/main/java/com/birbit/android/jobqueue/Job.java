@@ -353,6 +353,10 @@ abstract public class Job implements Serializable {
         return cancelled;
     }
 
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
     /**
      * Convenience method that checks if job is cancelled and throws a RuntimeException if it is
      * cancelled.

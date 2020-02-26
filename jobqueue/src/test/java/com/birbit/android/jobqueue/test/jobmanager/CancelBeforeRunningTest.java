@@ -1,25 +1,43 @@
 package com.birbit.android.jobqueue.test.jobmanager;
 
-import com.birbit.android.jobqueue.CancelResult;
-import com.birbit.android.jobqueue.Job;
-import com.birbit.android.jobqueue.JobManager;
-import com.birbit.android.jobqueue.Params;
-import com.birbit.android.jobqueue.TagConstraint;
+import androidx.annotation.NonNull;
+import com.birbit.android.jobqueue.*;
 import com.birbit.android.jobqueue.test.jobs.DummyJob;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.MatcherAssert.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 @RunWith(RobolectricTestRunner.class)
 
 public class CancelBeforeRunningTest extends JobManagerTestBase {
+    @Test
+    public void testCancelById() {
+        JobManager jobManager = createJobManager();
+        jobManager.stop();
+        CancelableDummyJob nonPersistentJob = new CancelableDummyJob(new Params(0), jobManager);
+        CancelableDummyJob persistentJob = new CancelableDummyJob(new Params(0).persist(), jobManager);
+
+        jobManager.addJob(nonPersistentJob);
+        jobManager.addJob(persistentJob);
+
+
+        nonPersistentJob.cancel();
+        persistentJob.cancel();
+
+        assertThat("nonPersistentJob is still added", nonPersistentJob.getOnAddedCnt(), is(1));
+        assertThat("persistentJob is still added", persistentJob.getOnAddedCnt(), is(1));
+//
+//        assertThat("nonPersistentJob is run 1 time", nonPersistentJob.getOnRunCnt(), is(1));
+//        assertThat("persistentJob is run 1 time", persistentJob.getOnRunCnt(), is(1));
+
+    }
+
     @Test
     public void testCancelBeforeRunning() {
         JobManager jobManager = createJobManager();
@@ -94,6 +112,39 @@ public class CancelBeforeRunningTest extends JobManagerTestBase {
         public void onRun() throws Throwable {
             super.onRun();
             persistentJobLatch.countDown();
+        }
+    }
+
+    public static class CancelableDummyJob extends DummyJob {
+        private transient JobManager jobManager;
+
+        public CancelableDummyJob(Params params, JobManager jobManager) {
+            super(params);
+            this.jobManager = jobManager;
+        }
+
+        public void cancel() {
+            setCancelled(true);
+            jobManager.cancelJobById(getId());
+        }
+
+        @Override
+        public void onRun() throws Throwable {
+            super.onRun();
+            if (isCancelled()) {
+                return;
+            }
+            Thread.sleep(1000);
+            throw new RuntimeException();
+        }
+
+        @Override
+        protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
+            if (runCount < 100) {
+                return RetryConstraint.RETRY;
+            } else {
+                return RetryConstraint.CANCEL;
+            }
         }
     }
 }
